@@ -91,3 +91,4 @@ IpcMessager.getInstance(getApplication()).addMessageLisenter(new IMessageLisente
             }
         });
 ```
+最后附上博客地址：[KimIpc](https://blog.csdn.net/wengliuhu/article/details/118326117)
