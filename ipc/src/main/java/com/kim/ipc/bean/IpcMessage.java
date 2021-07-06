@@ -1,4 +1,4 @@
-package com.kim.ipc;
+package com.kim.ipc.bean;
 
 import java.io.Serializable;
 

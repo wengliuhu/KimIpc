@@ -28,6 +28,14 @@ android {
     }
 }
 
+//ext {
+//    PUBLISH_GROUP_ID = 'io.github.wengliuhu'
+//    PUBLISH_VERSION = '1.0'
+//    PUBLISH_ARTIFACT_ID = 'KimIpc_ipc'
+//}
+//apply from: '../publish-mavencentral.gradle'
+
+
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

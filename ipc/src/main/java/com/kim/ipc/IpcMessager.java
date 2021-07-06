@@ -183,6 +183,22 @@ public class IpcMessager {
      * @param params
      * @throws Exception
      */
+    public boolean send2Method(String packageName, String methodName, String params) throws Exception {
+        boolean result = false;
+        if (mServers.containsKey(packageName)) {
+            mServers.get(packageName).sendMessage(mApp.getPackageName(), IPC_TYPE_METHOD, methodName, params);
+            result = true;
+        }
+        return result;
+
+    }
+
+    /**
+     * 发送调用对应进程方法的消息
+     * @param methodName
+     * @param params
+     * @throws Exception
+     */
     public boolean send2Method(String methodName, String params) throws Exception {
         boolean result = false;
         if (mServers.size() <= 0) return result;

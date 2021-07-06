@@ -14,6 +14,8 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        // 用于生成javaDoc和jar，如果gradle版本为2.4及以上，下面的版本就要改为1.3，具体可参考https://github.com/dcendents/android-maven-gradle-plugin
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
     }
 }
 
@@ -23,6 +25,13 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven {
+            credentials {
+                username '60d57a70395ee4198d6f14e2'
+                password 'yngc_uuuu2K)'
+            }
+            url 'https://packages.aliyun.com/maven/repository/2115377-release-SMFWQ4/'
+        }
 
     }
 }

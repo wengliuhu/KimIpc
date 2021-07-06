@@ -6,3 +6,37 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
 }
+//
+//ext {
+//    PUBLISH_GROUP_ID = 'io.github.wengliuhu'
+//    PUBLISH_VERSION = '1.0'
+//    PUBLISH_ARTIFACT_ID = 'KimIpc_annotation'
+//}
+//apply from: '../java_library.gradle'
+
+//group 'com.kim.ipc.annotation'
+//version '1.0'
+//def artifactId = 'annotation'
+//
+//apply plugin: 'maven'
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: 'https://packages.aliyun.com/maven/repository/2115377-release-SMFWQ4/') {
+//                authentication(
+//                        userName: '60d57a70395ee4198d6f14e2',
+//                        password: 'yngc_uuuu2K)'
+//                )
+//            }
+//            snapshotRepository(url: 'https://packages.aliyun.com/maven/repository/2115377-snapshot-dwEayW/') {
+//                authentication(
+//                        userName: '60d57a70395ee4198d6f14e2',
+//                        password: 'yngc_uuuu2K)'
+//                )
+//            }
+//            pom.version = '1.0'
+//            pom.artifactId = 'annotation'
+//            pom.groupId = 'com.kim.ipc'
+//        }
+//    }
+//}
