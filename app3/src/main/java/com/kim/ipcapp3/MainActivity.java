@@ -1,7 +1,5 @@
 package com.kim.ipcapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,7 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kim.annotation.IpcMethod;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.kim.annotation.Server;
 import com.kim.ipc.IMessageLisenter;
 import com.kim.ipc.IpcManager;

@@ -5,7 +5,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kim.annotation.IpcMethod;
-import com.kim.ipc.IpcManager;
+import com.kim.ipc.BuildConfig;
+import com.kim.ipc.BinderIpcManager;
 
 /**
  * @author : wengliuhu
@@ -25,7 +26,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.d("Conected", "------------BaseApplication---onCreate-:" );
-        IpcManager.getInstance().init();
+        BinderIpcManager.getInstance().init();
     }
     @IpcMethod(key = "name")
     public static String appName(String msg){

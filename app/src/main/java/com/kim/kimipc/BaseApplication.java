@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kim.annotation.IpcMethod;
+import com.kim.ipc.BinderIpcManager;
 
 /**
  * @author : wengliuhu
@@ -31,6 +32,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.d("Conected", "------------BaseApplication---onCreate-:" );
+        BinderIpcManager.getInstance().init();
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {

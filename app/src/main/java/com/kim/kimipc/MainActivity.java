@@ -1,7 +1,5 @@
 package com.kim.kimipc;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,11 +9,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.kim.annotation.Server;
-import com.kim.ipc.IMessageLisenter;
-import com.kim.ipc.IpcManager;
-import com.kim.ipc.IpcMessager;
-import com.kim.ipc.OnIpcConnectionLisenter;
+import com.kim.bean.Student;
+import com.kim.ipc.BinderIpcManager;
+import com.kim.ipc.Message;
+import com.kim.ipc.OnIpcLisenter;
+import com.kim.ipc.BinderIpcMessenger;
+import com.kim.ipc.messenger.BaseIpcMessenger;
+import com.kim.ipc.messenger.IMessageLisenter;
+import com.kim.ipc.messenger.TcpIpcMessenger;
+import com.kim.ipc.server.TcpServer;
+import com.kim.ipc.server.UdpMulticastServer;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 //@Server(serverPackageNames = {"com.kim.app2", "com.kim.ipcapp3", "com.kim.kimipc"})
 @Server(serverPackageNames = {"com.kim.app2"})
@@ -23,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "kimipc111";
     private EditText sendEt;
     private TextView receiveTv;
-    private Button sendBtn, nameBtn, secondBtn;
+    private Button sendBtn, nameBtn, secondBtn, btn_speak;
+    int i = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,35 +46,30 @@ public class MainActivity extends AppCompatActivity {
         sendBtn = findViewById(R.id.btn);
         nameBtn = findViewById(R.id.btn2);
         secondBtn = findViewById(R.id.btn3);
+        btn_speak = findViewById(R.id.btn_speak);
 
-        IpcMessager.getInstance(getApplication()).addIpcConnectionLisenter(IpcManager.COM_KIM_APP2, new OnIpcConnectionLisenter() {
+        BinderIpcMessenger.getInstance().addIpcConnectionLisenter(BinderIpcManager.COM_KIM_APP2, new OnIpcLisenter() {
             @Override
             public boolean onConected(String packageName) {
-                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_APP2 + "连接成功!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, BinderIpcManager.COM_KIM_APP2 + "连接成功!", Toast.LENGTH_LONG).show();
                 return false;
             }
 
             @Override
             public boolean onDisConected(String packageName) {
-                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_APP2 + "断开连接!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, BinderIpcManager.COM_KIM_APP2 + "断开连接!", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "-------------------onDisConected:--------" + packageName);
                 return false;
             }
         });
-        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_APP2);
+        BinderIpcMessenger.getInstance().bindServiceForever(BinderIpcManager.COM_KIM_APP2);
 //        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_IPCAPP3);
 //        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_KIMIPC);
-        IpcMessager.getInstance(getApplication()).addMessageLisenter(new IMessageLisenter() {
+        BinderIpcMessenger.getInstance().addMessageLisenter("all", new IMessageLisenter() {
+
             @Override
-            public void onMessage(String key, String value) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        StringBuilder stringBuilder = new StringBuilder(receiveTv.getText());
-//                        stringBuilder.append("接收到信息:" +value + "\n");
-//                        receiveTv.setText(stringBuilder.toString());
-//                    }
-//                });
+            public void onMessage(Message message) {
+
             }
         });
         sendBtn.setOnClickListener(new View.OnClickListener() {
@@ -69,20 +77,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (TextUtils.isEmpty(sendEt.getText().toString())) return;
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (int i = 0; i < 1000; i ++){
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                        stringBuilder.append("0123456789**********0123456789**********0123456789**********0123456789**********0123456789**********");
-                    }
-                    IpcMessager.getInstance(getApplication()).sendMessage("key", stringBuilder.toString());
+                    Student student = new Student();
+                    student.setName("小王");
+                    student.setAge(12);
+                    BinderIpcMessenger.getInstance().sendMessage("key", student);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -93,22 +91,56 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    IpcMessager.getInstance(getApplication()).send2Method("name", "你好");
+
+                    Message message = new Message.Builder()
+                            .message("你好")
+                            .messageKey("name")
+                            .type(Message.IPC_TYPE_METHOD)
+                            .messageClass(String.class.getName())
+                            .fromAPP(getApplication().getPackageName())
+                            .toApp(getApplication().getPackageName())
+                            .build();
+                    final int msgId = TcpIpcMessenger.getInstance().sendMessage(message);
+                    TcpIpcMessenger.getInstance().addMessageLisenter("name", new IMessageLisenter() {
+                        @Override
+                        public void onMessage(Message message) {
+                            // 接收消息
+                            if (message.getMessageBackId() == msgId){
+                                Log.d("kim", "----------message back------:" + message.getMessage());
+                            }
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
+
         });
 
         secondBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    IpcMessager.getInstance(getApplication()).send2Method("gotoSecondActivity", "你好");
+                    BinderIpcMessenger.getInstance().send2Method("gotoSecondActivity", "你好", String.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+        TtsSpeaker.getInstance().init(this);
+        btn_speak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                i++;
+                TtsSpeaker.getInstance().addMessageFlush("[p1000] 放大" + i + "倍");
+            }
+        });
+
+//        new UdpBroadcastServer(getApplication()).start();
+        new UdpMulticastServer().start();
+        new TcpServer().start();
     }
+
+
 }

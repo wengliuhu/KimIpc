@@ -120,34 +120,38 @@ public class IpcProcessor extends BaseProcessor{
     private void generateServiceConnections(){
         final String ipcPackageName = "com.kim.ipc";
 
-        TypeSpec.Builder builder =TypeSpec.classBuilder("IpcManager");
+        TypeSpec.Builder builder =TypeSpec.classBuilder("BinderIpcManager");
         // 构建静态全局变量
-        FieldSpec.Builder instanceFsB = FieldSpec.builder(ClassName.get(ipcPackageName, "IpcManager"), "mInstance")
+        FieldSpec.Builder instanceFsB = FieldSpec.builder(ClassName.get(ipcPackageName, "BinderIpcManager"), "mInstance")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 
-        FieldSpec.Builder ipcMessagerFsB = FieldSpec.builder(ClassName.get(ipcPackageName, "IpcMessager"), "ipcMessage")
+        FieldSpec.Builder ipcMessagerFsB = FieldSpec.builder(ClassName.get(ipcPackageName, "BinderIpcMessenger"), "ipcMessage")
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                .initializer("$T.getInstance()", ClassName.get("com.kim.ipc", "IpcMessager"));
+                .initializer("$T.getInstance()", ClassName.get("com.kim.ipc", "BinderIpcMessenger"));
+
+        FieldSpec.Builder ipcMethodFsB = FieldSpec.builder(ClassName.get("com.kim.ipc", "IpcMethod"), "ipcMethod")
+                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                .initializer("$T.getInstance()", ClassName.get("com.kim.ipc", "IpcMethod"));
 
         // 构建类
         TypeSpec.Builder ipcManagerTsB = builder
                 .addModifiers(Modifier.PUBLIC);
 
         // 生成构造函数
-        MethodSpec.Builder ipcManagerMsB = MethodSpec.methodBuilder("IpcManager")
+        MethodSpec.Builder ipcManagerMsB = MethodSpec.methodBuilder("BinderIpcManager")
                 .addModifiers(Modifier.PRIVATE);
 
         MethodSpec.Builder getInstanceMsB = MethodSpec.methodBuilder("getInstance")
 //                .addParameter(ParameterSpec.builder(ClassName.get("android.app", "Application"), "application").build())
                 .addStatement("if (mInstance == null){\n" +
-                        " synchronized (IpcManager.class){\n" +
+                        " synchronized (BinderIpcManager.class){\n" +
                         " if (mInstance == null){\n" +
-                        " mInstance = new IpcManager();\n" +
+                        " mInstance = new BinderIpcManager();\n" +
                         "  }\n" +
                         " }\n" +
                         "}\n" +
                         " return mInstance")
-                .returns(ClassName.get(ipcPackageName, "IpcManager"))
+                .returns(ClassName.get(ipcPackageName, "BinderIpcManager"))
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
         // init()函数
         MethodSpec.Builder initMsB = MethodSpec.methodBuilder("init")
@@ -168,7 +172,7 @@ public class IpcProcessor extends BaseProcessor{
         }
         if (annotationEntity.registerMethods != null && annotationEntity.registerMethods.size() > 0){
             for (Map.Entry<String, String> entry: annotationEntity.registerMethods.entrySet()) {
-                initMsB.addStatement("ipcMessage.addIpcMethod($S, $S)", entry.getKey(), entry.getValue());
+                initMsB.addStatement("ipcMethod.addIpcMethod($S, $S)", entry.getKey(), entry.getValue());
             }
         }
 
@@ -178,6 +182,7 @@ public class IpcProcessor extends BaseProcessor{
         ipcManagerTsB
                 .addField(instanceFsB.build())
                 .addField(ipcMessagerFsB.build())
+                .addField(ipcMethodFsB.build())
                 .addMethod(ipcManagerMsB.build())
                 .addMethod(getInstanceMsB.build())
                 .addMethod(initMsB.build());

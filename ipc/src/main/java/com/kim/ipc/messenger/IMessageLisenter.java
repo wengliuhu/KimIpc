@@ -1,4 +1,6 @@
-package com.kim.ipc;
+package com.kim.ipc.messenger;
+
+import com.kim.ipc.Message;
 
 /**
  * @author : wengliuhu
@@ -7,5 +9,5 @@ package com.kim.ipc;
  * Describe：
  */
 public interface IMessageLisenter {
-    void onMessage(String key, String value);
+    void onMessage(Message message);
 }

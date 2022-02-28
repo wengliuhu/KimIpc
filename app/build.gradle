@@ -5,6 +5,36 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+//加载资源
+    Properties properties = new Properties()
+    InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
+    properties.load(inputStream)
+    //读取文件
+    def keyFileDir = properties.getProperty('key.file')
+    //读取字段
+    def key_file = file(keyFileDir)
+    def key_keyAlias = properties.getProperty('keyAlias')
+    def key_keyPassword = properties.getProperty('keyPassword')
+    def key_storePassword = properties.getProperty('storePassword')
+
+    signingConfigs {
+        release {
+            v1SigningEnabled true
+            v2SigningEnabled true
+            keyAlias key_keyAlias
+            keyPassword key_keyPassword
+            storePassword key_storePassword
+            storeFile key_file
+        }
+        debug {
+            v1SigningEnabled true
+            v2SigningEnabled true
+            keyAlias key_keyAlias
+            keyPassword key_keyPassword
+            storePassword key_storePassword
+            storeFile key_file
+        }
+    }
 
     defaultConfig {
         applicationId "com.kim.kimipc"
@@ -23,8 +53,10 @@ android {
 
     buildTypes {
         release {
+            debuggable true
+            signingConfig signingConfigs.release //签名
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -38,17 +70,27 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-//    implementation project(path: ':ipc')
+    implementation project(path: ':ipc')
 //    implementation project(path: ':annotation')
-//    annotationProcessor project(path: ':complier')
+    annotationProcessor project(path: ':complier')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 //    implementation 'com.kim.ipc:annotation:1.0'
     implementation "io.github.wengliuhu:KimIpc_annotation:1.0"
-    implementation "io.github.wengliuhu:KimIpc_ipc:1.0"
-    annotationProcessor "io.github.wengliuhu:KimIpc_complier:1.0"
+//    implementation "io.github.wengliuhu:KimIpc_ipc:1.0"
+//    annotationProcessor "io.github.wengliuhu:KimIpc_complier:1.0"
+    implementation "io.github.wengliuhu:Bus:1.6"
+
+
+    // 抽象工厂库
+    implementation "io.github.wengliuhu:factory_annotation:1.6"
+    annotationProcessor "io.github.wengliuhu:factory_complier:1.6"
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.4'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
 
 }

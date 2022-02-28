@@ -9,16 +9,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.kim.annotation.IpcMethod;
 import com.kim.annotation.Server;
-import com.kim.ipc.IMessageLisenter;
-import com.kim.ipc.IpcManager;
-import com.kim.ipc.IpcMessager;
-import com.kim.ipc.OnIpcConnectionLisenter;
+import com.kim.bean.Student;
+import com.kim.ipc.Message;
+import com.kim.ipc.BinderIpcManager;
+import com.kim.ipc.BinderIpcMessenger;
+import com.kim.ipc.messenger.IMessageLisenter;
+import com.kim.ipc.server.TcpServer;
+import com.kim.ipc.server.UdpMulticastServer;
+import com.yanantec.ynbus.annotation.OnMessage;
 
-@Server(serverPackageNames = {"com.kim.kimipc", "com.kim.ipcapp3"})
+//@Server(serverPackageNames = {"com.kim.kimipc", "com.kim.ipcapp3"})
+@Server(serverPackageNames = {"com.kim.kimipc"})
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "kimipc2222";
     private EditText sendEt;
@@ -33,30 +36,30 @@ public class MainActivity extends AppCompatActivity {
         sendBtn = findViewById(R.id.btn);
         nameBtn = findViewById(R.id.btn2);
 
-        IpcMessager.getInstance(getApplication()).addIpcConnectionLisenter(IpcManager.COM_KIM_IPCAPP3, new OnIpcConnectionLisenter() {
+//        IpcMessager.getInstance(getApplication()).addIpcConnectionLisenter(IpcManager.COM_KIM_IPCAPP3, new OnIpcConnectionLisenter() {
+//            @Override
+//            public boolean onConected(String packageName) {
+//                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_IPCAPP3 + "连接成功!", Toast.LENGTH_LONG).show();
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onDisConected(String packageName) {
+//                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_IPCAPP3 + "断开连接!", Toast.LENGTH_LONG).show();
+//                Log.d(TAG, "-------------------onDisConected:--------" + packageName);
+//                return false;
+//            }
+//        });
+        BinderIpcMessenger.getInstance().bindServiceForever(BinderIpcManager.COM_KIM_KIMIPC);
+//        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_IPCAPP3);
+        BinderIpcMessenger.getInstance().addMessageLisenter(new IMessageLisenter() {
             @Override
-            public boolean onConected(String packageName) {
-                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_IPCAPP3 + "连接成功!", Toast.LENGTH_LONG).show();
-                return false;
-            }
-
-            @Override
-            public boolean onDisConected(String packageName) {
-                Toast.makeText(MainActivity.this, IpcManager.COM_KIM_IPCAPP3 + "断开连接!", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "-------------------onDisConected:--------" + packageName);
-                return false;
-            }
-        });
-        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_KIMIPC);
-        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_IPCAPP3);
-        IpcMessager.getInstance(getApplication()).addMessageLisenter(new IMessageLisenter() {
-            @Override
-            public void onMessage(String key, String value) {
+            public void onMessage(Message message) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         StringBuilder stringBuilder = new StringBuilder(receiveTv.getText());
-                        stringBuilder.append("接收到信息:" +value + "\n");
+                        stringBuilder.append("接收到信息:" +message.getMessage() + "\n");
                         receiveTv.setText(stringBuilder.toString());
                     }
                 });
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     if (TextUtils.isEmpty(sendEt.getText().toString())) return;
-                    IpcMessager.getInstance(getApplication()).sendMessage("key", sendEt.getText().toString());
+                    BinderIpcMessenger.getInstance().sendMessage("key", sendEt.getText().toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -78,11 +81,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    IpcMessager.getInstance(getApplication()).send2Method("name", "你好");
+                    BinderIpcMessenger.getInstance().send2Method("name", "你好");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+
+//        new UdpBroadcastServer(getApplication()).start();
+        new UdpMulticastServer().start();
+        new TcpServer().start();
+    }
+
+    @OnMessage(value = "key", always = true)
+    public void onGetStudent(Student student){
+        Log.d("kimAPP2", "----onGetStudent---" + student.getName());
     }
 }

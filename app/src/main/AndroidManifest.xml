@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KimIpc"
+        android:testOnly="false"
         android:name=".BaseApplication">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -19,10 +20,10 @@
         </activity>
         <activity android:name=".SecondActivity" />
 
-        <provider
-            android:authorities="${applicationId}.contextprovider"
-            android:name=".App1ContentProvider"
-            android:exported="true"/>
+<!--        <provider-->
+<!--            android:authorities="${applicationId}.contextprovider"-->
+<!--            android:name=".App1ContentProvider"-->
+<!--            android:exported="true"/>-->
     </application>
 
 </manifest>

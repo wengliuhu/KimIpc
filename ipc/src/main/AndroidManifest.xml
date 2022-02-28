@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.kim.ipc">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+<!--    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>-->
+<!--    <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>-->
     <application>
         <service android:name="com.kim.ipc.IpcService">
                 <intent-filter>
@@ -8,6 +14,11 @@
                     <category android:name="android.intent.category.DEFAULT"/>
                 </intent-filter>
         </service>
+
+        <provider
+            android:authorities="${applicationId}.contextprovider"
+            android:name=".KimContentProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>
