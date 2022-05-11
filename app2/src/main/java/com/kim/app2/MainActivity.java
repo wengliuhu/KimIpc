@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 //        });
         BinderIpcMessenger.getInstance().bindServiceForever(BinderIpcManager.COM_KIM_KIMIPC);
 //        IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_IPCAPP3);
-        BinderIpcMessenger.getInstance().addMessageLisenter(new IMessageLisenter() {
+        BinderIpcMessenger.getInstance().addMessageLisenter("all", new IMessageLisenter() {
             @Override
             public void onMessage(Message message) {
                 runOnUiThread(new Runnable() {
