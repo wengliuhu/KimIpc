@@ -30,7 +30,7 @@ android {
 
 ext {
     PUBLISH_GROUP_ID = 'io.github.wengliuhu'
-    PUBLISH_VERSION = '1.0'
+    PUBLISH_VERSION = '1.1'
     PUBLISH_ARTIFACT_ID = 'KimIpc_ipc'
 }
 apply from: '../publish-mavencentral.gradle'

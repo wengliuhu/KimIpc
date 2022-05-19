@@ -14,7 +14,7 @@ allprojects {
 	// 注解依赖包 
    	implementation "io.github.wengliuhu:KimIpc_annotation:1.0"
    	// IPC库依赖包
-    implementation "io.github.wengliuhu:KimIpc_ipc:1.0"
+    implementation "io.github.wengliuhu:KimIpc_ipc:1.1"
     // apt动态编译包
     annotationProcessor "io.github.wengliuhu:KimIpc_complier:1.0"
     
@@ -33,9 +33,9 @@ allprojects {
 	// 2.如果有返回类型，必须为String类型，如无返回类型，可以写为void类型。
 	@IpcMethod(key = "gotoSecondActivity")
     public static String gotoSecondActivity(String msg){
-        if (topActivity != null);
+       /* if (topActivity != null);
         Intent intent = new Intent(topActivity, SecondActivity.class);
-        topActivity.startActivity(intent);
+        topActivity.startActivity(intent);*/
         return "准备跳转第二个界面";
     }
 ```
@@ -47,7 +47,8 @@ allprojects {
 ###### 6.初始化IPC:
 
 ```java
- IpcManager.getInstance().init();
+// IpcManager.getInstance().init();
+     BinderIpcManager.getInstance().init();
 ```
 ###### 7.启动需要监听的进程（此处开放给用户选择是为了可能当前界面只关注特定的进程消息）：
 
@@ -56,8 +57,7 @@ allprojects {
 // bindService(Context context, String packageName)为只开启当前Activity的，后续有可能会断开连接
 
 //此处为开启包名为IpcManager.COM_KIM_APP2（COM_KIM_APP2为注解@Server注册的包名的大写）的Service（即开启该包名所在进程的服务端）
-IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_APP2);
-IpcMessager.getInstance(getApplication()).bindServiceForever(IpcManager.COM_KIM_IPCAPP3);
+BinderIpcMessenger.getInstance().bindServiceForever(BinderIpcManager.COM_KIM_APP2);
 ```
 
 ###### 8.发送消息：
@@ -72,23 +72,21 @@ send2Method(String packageName, String methodName, String params)
 sendMessage(String key, String value)
 // 发送给指定进程消息
 sendMessage(String packageName, String key, String value)
+// 发送对象
+Student student = new Student();
+student.setName("小王");
+student.setAge(12);
+BinderIpcMessenger.getInstance().sendMessage("key", student);
 ```
-###### 9.监听其他进程发送的消息
+###### 9.全局监听其他进程发送的消息
 
 ```java
-IpcMessager.getInstance(getApplication()).addMessageLisenter(new IMessageLisenter() {
-            @Override
-            public void onMessage(String key, String value) {
-            // 此处线程是跑在Binder线程池里面的，Binder方式是异步的。如果要在主线程需要切换
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        StringBuilder stringBuilder = new StringBuilder(receiveTv.getText());
-//                        stringBuilder.append("接收到信息:" +value + "\n");
-//                        receiveTv.setText(stringBuilder.toString());
-//                    }
-//                });
-            }
+ BinderIpcMessenger.getInstance().addMessageLisenter("all", new IMessageLisenter() {
+
+@Override
+public void onMessage(Message message) {
+
+        }
         });
 ```
 最后附上博客地址：[KimIpc](https://blog.csdn.net/wengliuhu/article/details/118326117)
