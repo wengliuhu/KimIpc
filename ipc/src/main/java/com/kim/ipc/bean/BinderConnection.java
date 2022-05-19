@@ -3,8 +3,10 @@ package com.kim.ipc.bean;
 import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.kim.ipc.IMessageServer;
+import com.kim.ipc.IpcApp;
 import com.kim.ipc.Message;
 
 /**
@@ -32,6 +34,7 @@ public class BinderConnection extends BaseConnection{
 
     public void setServer(IMessageServer server) {
         this.server = server;
+        Log.d("connecttion", "---------setServer-----" + server + "/////" + IpcApp.getApp().getPackageName());
     }
 
     public boolean isConnectForever() {

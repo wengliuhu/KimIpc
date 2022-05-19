@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (TextUtils.isEmpty(sendEt.getText().toString())) return;
                     Student student = new Student();
-                    student.setName("小王");
+                    student.setName(sendEt.getText().toString());
                     student.setAge(12);
                     BinderIpcMessenger.getInstance().sendMessage("key", student);
                 } catch (Exception e) {

@@ -16,16 +16,26 @@ public class Message implements Parcelable, Cloneable{
     public static final String IPC_TYPE_MESSAGE = "IPC_TYPE_MESSAGE";
     // 用于接收回复信息
     public static final String IPC_TYPE_REBACK = "IPC_TYPE_REBACK";
+    // 用于第一次连接成功后向服务端发送消息，服务端再作为客户端反向连接
+    public static final String IPC_TYPE_MESSAGE_ALIVE = "IPC_TYPE_MESSAGE_ALIVE";
+//    public static final String IPC_TYPE_MESSAGE_ALL= "IPC_TYPE_MESSAGE_ALL";
+    // 发送消息的进程
     private String fromAPP;
+    // 目的地进程
     private String toApp;
+    // 消息类型
     private String type;
-    // 为jsonString类型
+    // 为jsonString类型的消息内容
     private String message;
+    // 消息的key
     private String messageKey;
+    // 消息ID
     private int messageId;
+    // 发送的设备（IP）
     private String fromDevice;
+    // 目的地设备（IP）
     private String toDevices;
-    // message类的全路径
+    // message类的全路径，用于反序列化
     private String messageClass;
     // 通道：binder、tcp、Udp(组播)
     private String channal;

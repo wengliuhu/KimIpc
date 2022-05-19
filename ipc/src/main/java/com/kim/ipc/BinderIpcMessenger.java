@@ -94,6 +94,10 @@ public class BinderIpcMessenger extends BaseIpcMessenger {
                 case IPC_TYPE_REBACK:
                 case IPC_TYPE_MESSAGE:
                 {
+                    if (TextUtils.equals(Message.IPC_TYPE_MESSAGE_ALIVE, message.getMessageKey())){
+                        bindServiceForever(message.getFromAPP());
+                        break;
+                    }
                     Iterator<IMessageLisenter> iterator = mMessageLisenters.values().iterator();
                     if (TextUtils.isEmpty(message.getMessage())){
                         YnMessageManager.getInstance().sendEmptyMessage(message.getMessageKey());
@@ -157,14 +161,23 @@ public class BinderIpcMessenger extends BaseIpcMessenger {
      * @param messageServer
      */
     protected void addMessageServer(String packageName, @NonNull IMessageServer messageServer){
+        Log.d("kim", "-----------addMessageServer--------packageName:--------" + packageName);
         if (messageServer == null && !mServers.containsKey(packageName)) return;
         BaseConnection connection = mServers.get(packageName);
         if (!(connection instanceof BinderConnection)) return;
         ((BinderConnection) connection).setServer(messageServer);
+        ((BinderConnection) connection).setAppId(packageName);
+
         connection.setAlive(true);
         mServers.put(packageName, connection);
         Log.d("kim", "-------------------Conected:--------" + packageName);
         onConected(packageName);
+        try {
+            // 用于告知连接的服务端，当前程序运行
+            sendMessage(packageName, Message.IPC_TYPE_MESSAGE_ALIVE, IpcApp.getApp().getPackageName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -254,7 +267,6 @@ public class BinderIpcMessenger extends BaseIpcMessenger {
     public void send2Method(String msgKey, Object message) throws Exception {
         send2Method("", msgKey, message);
     }
-
 
     /**
      * 发送普通消息

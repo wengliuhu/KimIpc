@@ -24,7 +24,6 @@
         app:layout_constraintTop_toBottomOf="@id/et"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="20dp"
-        android:visibility="gone"
         android:text="发送"/>
 
     <Button
@@ -35,7 +34,6 @@
         app:layout_constraintLeft_toRightOf="@id/btn"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
-        android:visibility="gone"
         android:text="调用name（）"/>
     <Button
         android:id="@+id/btn3"
@@ -60,7 +58,7 @@
         android:id="@+id/btn_speak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btn3"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:text="播放语音"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

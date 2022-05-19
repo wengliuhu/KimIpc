@@ -37,6 +37,7 @@ public class App1ContentProvider extends ContentProvider {
     public boolean onCreate() {
         Log.d("kim", "-----------App1ContentProvider----------");
         Application app = (Application)this.getContext().getApplicationContext();
+        IpcApp.getInstance().onCreate(app);
         BinderIpcManager.getInstance().init();
         app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
